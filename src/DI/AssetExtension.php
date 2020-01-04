@@ -10,7 +10,7 @@ use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Symfony\Component\Asset\PackageInterface;
 use Symfony\Component\Asset\Packages;
-use WebChemistry\Asset\BasePathPackage;
+use WebChemistry\Asset\Packages\BasePathPackage;
 use WebChemistry\Asset\Exceptions\CompilerException;
 use WebChemistry\Asset\Latte\AssetMacro;
 
