@@ -53,7 +53,17 @@ final class AssetBundleManager {
 		foreach ($this->bundles[$bundle]->getEntries() as $entry) {
 			$url = $this->packages->getUrl($entry->getPath(), $entry->getPackageName());
 
-			$links[] = new Link('preload', $url);
+			$link = new Link('preload', $url);
+			switch ($entry->getType()) {
+				case 'css':
+					$link = $link->withAttribute('as', 'style');
+					break;
+				case 'js':
+					$link = $link->withAttribute('as', 'script');
+					break;
+			}
+
+			$links[] = $link;
 		}
 
 		$serializer = new HttpHeaderSerializer();

@@ -34,6 +34,9 @@ final class AssetBundleEntry {
 		return $this->path;
 	}
 
+	/**
+	 * css, js
+	 */
 	public function getType(): string {
 		return $this->type;
 	}
