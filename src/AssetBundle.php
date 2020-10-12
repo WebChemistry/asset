@@ -12,7 +12,7 @@ final class AssetBundle
 	private string $name;
 
 	/** @var AssetBundleEntry[] */
-	private array $entries;
+	private array $entries = [];
 
 	public function __construct(string $name, array $entries)
 	{

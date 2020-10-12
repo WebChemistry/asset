@@ -15,7 +15,7 @@ final class AssetBundleManager
 	use SmartObject;
 
 	/** @var AssetBundle[] */
-	private array $bundles;
+	private array $bundles = [];
 
 	private Packages $packages;
 
