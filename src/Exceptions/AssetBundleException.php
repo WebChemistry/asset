@@ -4,6 +4,7 @@ namespace WebChemistry\Asset\Exceptions;
 
 use Exception;
 
-class AssetBundleException extends Exception {
+class AssetBundleException extends Exception
+{
 
 }

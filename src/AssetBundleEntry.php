@@ -4,40 +4,39 @@ namespace WebChemistry\Asset;
 
 use Nette\SmartObject;
 
-final class AssetBundleEntry {
+final class AssetBundleEntry
+{
 
 	use SmartObject;
 
-	/** @var string|null */
-	private $packageName;
+	private ?string $packageName;
 
-	/** @var string */
-	private $path;
+	private string $path;
 
-	/** @var string */
-	private $type;
+	private string $type;
 
-	public function __construct(?string $packageName, string $path, string $type) {
+	public function __construct(?string $packageName, string $path, string $type)
+	{
 		$this->packageName = $packageName;
 		$this->path = $path;
 		$this->type = $type;
 	}
 
-	/**
-	 * @return string|null
-	 */
-	public function getPackageName(): ?string {
+	public function getPackageName(): ?string
+	{
 		return $this->packageName;
 	}
 
-	public function getPath(): string {
+	public function getPath(): string
+	{
 		return $this->path;
 	}
 
 	/**
 	 * css, js
 	 */
-	public function getType(): string {
+	public function getType(): string
+	{
 		return $this->type;
 	}
 

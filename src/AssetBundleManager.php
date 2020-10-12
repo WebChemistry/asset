@@ -9,23 +9,23 @@ use Symfony\Component\WebLink\HttpHeaderSerializer;
 use Symfony\Component\WebLink\Link;
 use WebChemistry\Asset\Exceptions\AssetBundleException;
 
-final class AssetBundleManager {
+final class AssetBundleManager
+{
 
 	use SmartObject;
 
 	/** @var AssetBundle[] */
-	private $bundles;
+	private array $bundles;
 
-	/** @var Packages */
-	private $packages;
+	private Packages $packages;
 
-	/** @var IResponse */
-	private $response;
+	private IResponse $response;
 
 	/**
 	 * @param AssetBundle[] $bundles
 	 */
-	public function __construct(array $bundles, Packages $packages, IResponse $response) {
+	public function __construct(array $bundles, Packages $packages, IResponse $response)
+	{
 		foreach ($bundles as $bundle) {
 			$this->addBundle($bundle);
 		}
@@ -34,19 +34,22 @@ final class AssetBundleManager {
 		$this->response = $response;
 	}
 
-	public function addBundle(AssetBundle $bundle): self {
+	public function addBundle(AssetBundle $bundle): self
+	{
 		$this->bundles[$bundle->getName()] = $bundle;
 
 		return $this;
 	}
 
-	protected function assertBundleExists(string $bundle): void {
+	protected function assertBundleExists(string $bundle): void
+	{
 		if (!isset($this->bundles[$bundle])) {
 			throw new AssetBundleException(sprintf('Asset bundle %s not exists', $bundle));
 		}
 	}
 
-	public function preload(string $bundle): void {
+	public function preload(string $bundle): void
+	{
 		$this->assertBundleExists($bundle);
 
 		$links = [];
@@ -70,7 +73,8 @@ final class AssetBundleManager {
 		$this->response->addHeader('Link', $serializer->serialize($links));
 	}
 
-	public function buildStyles(string $bundle): string {
+	public function buildStyles(string $bundle): string
+	{
 		$this->assertBundleExists($bundle);
 
 		$html = '';
@@ -86,7 +90,8 @@ final class AssetBundleManager {
 		return $html;
 	}
 
-	public function buildJavascript(string $bundle): string {
+	public function buildJavascript(string $bundle): string
+	{
 		$this->assertBundleExists($bundle);
 
 		$html = '';

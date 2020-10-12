@@ -18,7 +18,8 @@ use WebChemistry\Asset\Latte\AssetMacro;
 
 final class AssetBundleExtension extends CompilerExtension {
 
-	public function getConfigSchema(): Schema {
+	public function getConfigSchema(): Schema
+	{
 		return Expect::arrayOf(
 			Expect::arrayOf(
 				Expect::anyOf(Expect::string(), Expect::structure([
@@ -30,7 +31,8 @@ final class AssetBundleExtension extends CompilerExtension {
 		);
 	}
 
-	public function loadConfiguration() {
+	public function loadConfiguration(): void
+	{
 		$builder = $this->getContainerBuilder();
 		$config = $this->getConfig();
 
@@ -43,7 +45,8 @@ final class AssetBundleExtension extends CompilerExtension {
 		}
 	}
 
-	public function beforeCompile() {
+	public function beforeCompile(): void
+	{
 		$builder = $this->getContainerBuilder();
 
 		if (!interface_exists(ILatteFactory::class)) {
@@ -73,7 +76,8 @@ final class AssetBundleExtension extends CompilerExtension {
 	 * @return Statement[]
 	 * @throws CompilerException
 	 */
-	protected function entries(array $config): array {
+	protected function entries(array $config): array
+	{
 		$classes = [];
 		foreach ($config as $name => $items) {
 			$classes[$name] = $bundle = new Statement(AssetBundle::class, [$name]);
@@ -109,7 +113,8 @@ final class AssetBundleExtension extends CompilerExtension {
 		return $classes;
 	}
 
-	private function resolvePackageAndSource(string $item): array {
+	private function resolvePackageAndSource(string $item): array
+	{
 		$args = explode(':', $item, 2);
 		$count = count($args);
 
@@ -122,7 +127,8 @@ final class AssetBundleExtension extends CompilerExtension {
 		return $args;
 	}
 
-	private function resolveSuffix(string $item): string {
+	private function resolveSuffix(string $item): string
+	{
 		$pos = strrpos($item, '.');
 		if ($pos === false) {
 			throw new CompilerException(sprintf('Cannot resolve suffix in %s', $item));

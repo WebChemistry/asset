@@ -4,6 +4,7 @@ namespace WebChemistry\Asset\Exceptions;
 
 use Exception;
 
-class CompilerException extends Exception {
+class CompilerException extends Exception
+{
 
 }

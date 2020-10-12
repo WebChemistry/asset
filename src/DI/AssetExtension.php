@@ -14,9 +14,11 @@ use WebChemistry\Asset\Packages\BasePathPackage;
 use WebChemistry\Asset\Exceptions\CompilerException;
 use WebChemistry\Asset\Latte\AssetMacro;
 
-final class AssetExtension extends CompilerExtension {
+final class AssetExtension extends CompilerExtension
+{
 
-	public function getConfigSchema(): Schema {
+	public function getConfigSchema(): Schema
+	{
 		return Expect::structure([
 			'packages' => Expect::arrayOf(
 				Expect::structure([
@@ -30,7 +32,8 @@ final class AssetExtension extends CompilerExtension {
 		]);
 	}
 
-	public function loadConfiguration() {
+	public function loadConfiguration(): void
+	{
 		$builder = $this->getContainerBuilder();
 		$config = $this->getConfig();
 
@@ -68,7 +71,8 @@ final class AssetExtension extends CompilerExtension {
 			]);
 	}
 
-	public function beforeCompile(): void {
+	public function beforeCompile(): void
+	{
 		$builder = $this->getContainerBuilder();
 		$config = $this->getConfig();
 

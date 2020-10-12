@@ -4,6 +4,7 @@ namespace WebChemistry\Asset\Exceptions;
 
 use Exception;
 
-class AssetMacroException extends Exception {
+class AssetMacroException extends Exception
+{
 
 }

@@ -6,21 +6,23 @@ use InvalidArgumentException;
 use Nette\SmartObject;
 use WebChemistry\Asset\AssetBundleManager;
 
-final class AssetBundleLatteProvider {
+final class AssetBundleLatteProvider
+{
 
 	use SmartObject;
 
-	/** @var AssetBundleManager */
-	private $assetBundleManager;
+	private AssetBundleManager $assetBundleManager;
 
-	public function __construct(AssetBundleManager $assetBundleManager) {
+	public function __construct(AssetBundleManager $assetBundleManager)
+	{
 		$this->assetBundleManager = $assetBundleManager;
 	}
 
-	public function build(string $bundle, string $type): string {
+	public function build(string $bundle, string $type): string
+	{
 		if ($type === 'css') {
 			return $this->assetBundleManager->buildStyles($bundle);
-		} else if ($type === 'js') {
+		} elseif ($type === 'js') {
 			return $this->assetBundleManager->buildJavascript($bundle);
 		} else {
 			throw new InvalidArgumentException(sprintf('Type %s is not supported in macro assetBundle', $type));

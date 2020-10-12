@@ -3,6 +3,7 @@
 	"description": "Integration of symfony/asset and symfony/web-link for nette",
 	"license": "MIT",
 	"require": {
+		"php": ">=7.4",
 		"symfony/asset": "~5.0",
 		"symfony/web-link": "~5.0"
 	},

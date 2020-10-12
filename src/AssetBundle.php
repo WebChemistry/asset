@@ -4,17 +4,18 @@ namespace WebChemistry\Asset;
 
 use Nette\SmartObject;
 
-final class AssetBundle {
+final class AssetBundle
+{
 
 	use SmartObject;
 
-	/** @var string */
-	private $name;
+	private string $name;
 
 	/** @var AssetBundleEntry[] */
-	private $entries;
+	private array $entries;
 
-	public function __construct(string $name, array $entries) {
+	public function __construct(string $name, array $entries)
+	{
 		$this->name = $name;
 
 		foreach ($entries as $entry) {
@@ -25,15 +26,18 @@ final class AssetBundle {
 	/**
 	 * @return AssetBundleEntry[]
 	 */
-	public function getEntries(): array {
+	public function getEntries(): array
+	{
 		return $this->entries;
 	}
 
-	public function getName(): string {
+	public function getName(): string
+	{
 		return $this->name;
 	}
 
-	private function addEntry(AssetBundleEntry $entry): self {
+	private function addEntry(AssetBundleEntry $entry): self
+	{
 		$this->entries[] = $entry;
 
 		return $this;

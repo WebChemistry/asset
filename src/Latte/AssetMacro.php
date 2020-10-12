@@ -8,7 +8,8 @@ use Latte\Macros\MacroSet;
 use Latte\PhpWriter;
 use WebChemistry\Asset\Exceptions\AssetMacroException;
 
-final class AssetMacro extends MacroSet {
+final class AssetMacro extends MacroSet
+{
 
 	private const ALLOWED_TAGS = ['link', 'script'];
 	private const TAGS_MAPPING = [
@@ -16,13 +17,15 @@ final class AssetMacro extends MacroSet {
 		'script' => 'src',
 	];
 
-	public static function install(Compiler $compiler): void {
+	public static function install(Compiler $compiler): void
+	{
 		$me = new static($compiler);
 
 		$me->addMacro('asset', null, null, [$me, 'assetAttr']);
 	}
 
-	public function assetAttr(MacroNode $node, PhpWriter $writer): string {
+	public function assetAttr(MacroNode $node, PhpWriter $writer): string
+	{
 		if (!$node->htmlNode) {
 			throw new AssetMacroException('Unexpected state');
 		}
@@ -36,7 +39,8 @@ final class AssetMacro extends MacroSet {
 		$attr = self::TAGS_MAPPING[$tag];
 
 		return $writer->write(
-			'echo \' \' . %word . \'="\' . $this->global->assetPackages->getUrl(%node.args) . \'"\';', $attr
+			'echo \' \' . %word . \'="\' . $this->global->assetPackages->getUrl(%node.args) . \'"\';',
+			$attr
 		);
 	}
 
