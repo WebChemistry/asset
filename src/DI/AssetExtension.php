@@ -2,33 +2,34 @@
 
 namespace WebChemistry\Asset\DI;
 
-use Nette\Bridges\ApplicationLatte\ILatteFactory;
+use LogicException;
+use Nette\Bridges\ApplicationLatte\LatteFactory;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Definitions\FactoryDefinition;
-use Nette\Http\IRequest;
+use Nette\DI\Definitions\Statement;
+use Nette\DI\MissingServiceException;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
-use Symfony\Component\Asset\PackageInterface;
+use Nette\Utils\Arrays;
 use Symfony\Component\Asset\Packages;
-use WebChemistry\Asset\Packages\BasePathPackage;
-use WebChemistry\Asset\Exceptions\CompilerException;
-use WebChemistry\Asset\Latte\AssetMacro;
+use WebChemistry\Asset\Latte\Extension\AssetExtension as LatteAssetExtension;
+use WebChemistry\Asset\Package\BasePathPackageFactory;
+use WebChemistry\Asset\Package\BaseUrlPackageFactory;
+use WebChemistry\Asset\Version\JsonManifestVersionFactory;
 
 final class AssetExtension extends CompilerExtension
 {
 
+	public function __construct(
+		private ?string $wwwDir = null,
+	)
+	{
+	}
+
 	public function getConfigSchema(): Schema
 	{
 		return Expect::structure([
-			'packages' => Expect::arrayOf(
-				Expect::structure([
-					'type' => Expect::string(),
-					'arguments' => Expect::arrayOf('mixed'),
-				])
-			),
-			'macro' => Expect::structure([
-				'enable' => Expect::bool(interface_exists(ILatteFactory::class)),
-			])
+			'packages' => Expect::arrayOf(Expect::anyOf(Expect::type(Statement::class), Expect::string())),
 		]);
 	}
 
@@ -37,65 +38,48 @@ final class AssetExtension extends CompilerExtension
 		$builder = $this->getContainerBuilder();
 		$config = $this->getConfig();
 
-		$default = null;
-		$packages =  [];
-		foreach ($config->packages as $name => $package) {
-			if (!class_exists($package->type)) {
-				throw new CompilerException(sprintf('Package class %s not exists', $package->type));
-			}
+		$builder->addDefinition($this->prefix('latte'))
+			->setFactory(LatteAssetExtension::class);
 
-			if ($package->type === BasePathPackage::class) {
-				array_unshift($package->arguments, '@' . IRequest::class);
-			}
+		$builder->addFactoryDefinition($this->prefix('basePath.factory'))
+			->setImplement(BasePathPackageFactory::class);
 
-			$def = $builder->addDefinition($this->prefix('package.' . $name))
-				->setType(PackageInterface::class)
-				->setFactory($package->type, (array) $package->arguments);
+		$builder->addFactoryDefinition($this->prefix('baseUrl.factory'))
+			->setImplement(BaseUrlPackageFactory::class);
 
-			if ($name === 'default') {
-				$default = $def;
-			} else {
-				$packages[$name] = $def;
-				$def->setAutowired(false);
-			}
-		}
+		$builder->addDefinition($this->prefix('manifest.factory'))
+			->setFactory(JsonManifestVersionFactory::class, [$this->getWwwDir()]);
 
-		if (!$default) {
-			throw new CompilerException('Default package must be set');
-		}
+		$packages = array_map(
+			fn (Statement|string $package): Statement => is_string($package) ? new Statement($package) : $package,
+			$config->packages,
+		);
 
 		$builder->addDefinition($this->prefix('packages'))
-			->setFactory(Packages::class, [
-				$default,
-				$packages,
-			]);
+			->setFactory(Packages::class, [Arrays::first($packages), $packages]);
 	}
 
 	public function beforeCompile(): void
 	{
 		$builder = $this->getContainerBuilder();
-		$config = $this->getConfig();
 
-		if (!$config->macro->enable) {
+		try {
+			$factory = $builder->getDefinitionByType(LatteFactory::class);
+
+			assert($factory instanceof FactoryDefinition);
+
+			$factory->getResultDefinition()
+				->addSetup('addExtension', [$this->prefix('@latte')]);
+		} catch (MissingServiceException) {
 			return;
 		}
+	}
 
-		$definition = $builder->getDefinitionByType(ILatteFactory::class);
-
-		if (!$definition instanceof FactoryDefinition) {
-			throw new CompilerException(
-				sprintf(
-					'%s definition must be instance of %s, %s given',
-					ILatteFactory::class,
-					FactoryDefinition::class,
-					get_class($definition)
-				)
-			);
-		}
-
-		$definition->getResultDefinition()
-			->addSetup('$service->onCompile[] = function ($engine) { ?::install($engine->getCompiler()); }', [AssetMacro::class])
-			->addSetup('addProvider', ['assetPackages', $builder->getDefinition($this->prefix('packages'))]);
+	public function getWwwDir(): ?string
+	{
+		return $this->wwwDir ??
+			   $this->getContainerBuilder()->parameters['wwwDir'] ??
+			   throw new LogicException('%wwwDir% is not set.');
 	}
 
 }
