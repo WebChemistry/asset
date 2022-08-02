@@ -2,7 +2,6 @@
 
 namespace WebChemistry\Asset\DI;
 
-use LogicException;
 use Nette\Bridges\ApplicationLatte\LatteFactory;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Definitions\FactoryDefinition;
@@ -19,12 +18,6 @@ use WebChemistry\Asset\Version\JsonManifestVersionFactory;
 
 final class AssetExtension extends CompilerExtension
 {
-
-	public function __construct(
-		private ?string $wwwDir = null,
-	)
-	{
-	}
 
 	public function getConfigSchema(): Schema
 	{
@@ -48,7 +41,7 @@ final class AssetExtension extends CompilerExtension
 			->setImplement(BaseUrlPackageFactory::class);
 
 		$builder->addDefinition($this->prefix('manifest.factory'))
-			->setFactory(JsonManifestVersionFactory::class, [$this->getWwwDir()]);
+			->setFactory(JsonManifestVersionFactory::class);
 
 		$packages = array_map(
 			fn (Statement|string $package): Statement => is_string($package) ? new Statement($package) : $package,
@@ -73,13 +66,6 @@ final class AssetExtension extends CompilerExtension
 		} catch (MissingServiceException) {
 			return;
 		}
-	}
-
-	public function getWwwDir(): ?string
-	{
-		return $this->wwwDir ??
-			   $this->getContainerBuilder()->parameters['wwwDir'] ??
-			   throw new LogicException('%wwwDir% is not set.');
 	}
 
 }

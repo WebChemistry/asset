@@ -10,13 +10,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 final class JsonManifestVersionFactory
 {
 
-	public function __construct(
-		private string $wwwDir,
-	)
-	{
-		$this->wwwDir = rtrim($this->wwwDir, '/');
-	}
-
 	public function create(
 		string $manifestPath,
 		?HttpClientInterface $httpClient = null,
@@ -25,7 +18,7 @@ final class JsonManifestVersionFactory
 	): Package
 	{
 		return new Package(
-			new JsonManifestVersionStrategy($this->wwwDir . '/' . ltrim($manifestPath, '/'), $httpClient, $strictMode),
+			new JsonManifestVersionStrategy($manifestPath, $httpClient, $strictMode),
 			$context,
 		);
 	}
