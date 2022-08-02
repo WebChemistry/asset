@@ -14,7 +14,6 @@ use Symfony\Component\Asset\Packages;
 use WebChemistry\Asset\Latte\Extension\AssetExtension as LatteAssetExtension;
 use WebChemistry\Asset\Package\BasePathPackageFactory;
 use WebChemistry\Asset\Package\BaseUrlPackageFactory;
-use WebChemistry\Asset\Version\JsonManifestVersionFactory;
 
 final class AssetExtension extends CompilerExtension
 {
@@ -39,9 +38,6 @@ final class AssetExtension extends CompilerExtension
 
 		$builder->addFactoryDefinition($this->prefix('baseUrl.factory'))
 			->setImplement(BaseUrlPackageFactory::class);
-
-		$builder->addDefinition($this->prefix('manifest.factory'))
-			->setFactory(JsonManifestVersionFactory::class);
 
 		$packages = array_map(
 			fn (Statement|string $package): Statement => is_string($package) ? new Statement($package) : $package,
