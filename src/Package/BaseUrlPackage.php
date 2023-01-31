@@ -16,11 +16,18 @@ final class BaseUrlPackage extends UrlPackage
 		?string $basePath = null,
 		?VersionStrategyInterface $versionStrategy = null,
 		ContextInterface $context = null,
+		?string $subdomain = null,
 	)
 	{
-		$url = $request->getUrl()->getBaseUrl() . ltrim((string) $basePath, '/');
+		$url = $request->getUrl();
 
-		parent::__construct($url, $versionStrategy ?? new EmptyVersionStrategy(), $context);
+		if ($subdomain) {
+			$url = $url->withHost(sprintf('%s.%s', $subdomain, $url->getHost()));
+		}
+
+		$baseUrl = $url->getBaseUrl() . ltrim((string) $basePath, '/');
+
+		parent::__construct($baseUrl, $versionStrategy ?? new EmptyVersionStrategy(), $context);
 	}
 
 }

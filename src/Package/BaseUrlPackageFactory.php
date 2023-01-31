@@ -12,6 +12,7 @@ interface BaseUrlPackageFactory
 		?string $basePath = null,
 		?VersionStrategyInterface $versionStrategy = null,
 		ContextInterface $context = null,
+		?string $subdomain = null,
 	): BaseUrlPackage;
 
 }
