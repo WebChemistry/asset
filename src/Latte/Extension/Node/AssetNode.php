@@ -2,6 +2,7 @@
 
 namespace WebChemistry\Asset\Latte\Extension\Node;
 
+use Generator;
 use Latte\Compiler\Nodes\Html\ElementNode;
 use Latte\Compiler\Nodes\Php\Expression\ArrayNode;
 use Latte\Compiler\Nodes\Php\ExpressionNode;
@@ -51,6 +52,12 @@ final class AssetNode extends StatementNode
 		}
 
 		return $code;
+	}
+
+	public function &getIterator(): Generator
+	{
+		yield $this->file;
+		yield $this->arguments;
 	}
 
 }
