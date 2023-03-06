@@ -28,6 +28,16 @@ final class AssetExtension extends Extension
 	/**
 	 * @return callable[]
 	 */
+	public function getFunctions(): array
+	{
+		return [
+			'asset' => $this->packages->getUrl(...),
+		];
+	}
+
+	/**
+	 * @return callable[]
+	 */
 	public function getTags(): array
 	{
 		return [
