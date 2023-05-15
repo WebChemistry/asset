@@ -5,6 +5,8 @@ namespace WebChemistry\Asset\Latte\Extension;
 use Latte\Extension;
 use Symfony\Component\Asset\Packages;
 use WebChemistry\Asset\Latte\Extension\Node\AssetNode;
+use WebChemistry\Asset\Latte\Extension\Node\IfViteNode;
+use WebChemistry\Asset\Latte\Extension\Node\ViteNode;
 
 final class AssetExtension extends Extension
 {
@@ -43,6 +45,8 @@ final class AssetExtension extends Extension
 		return [
 			'asset' => [AssetNode::class, 'create'],
 			'n:asset' => [AssetNode::class, 'create'],
+			'vite' => [IfViteNode::class, 'create'],
+			'n:vite' => [IfViteNode::class, 'create'],
 		];
 	}
 
