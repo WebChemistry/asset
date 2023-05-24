@@ -14,6 +14,7 @@ use Symfony\Component\Asset\Packages;
 use WebChemistry\Asset\Latte\Extension\AssetExtension as LatteAssetExtension;
 use WebChemistry\Asset\Package\BasePathPackageFactory;
 use WebChemistry\Asset\Package\BaseUrlPackageFactory;
+use WebChemistry\Asset\Vite\VitePackage;
 
 final class AssetExtension extends CompilerExtension
 {
@@ -22,6 +23,14 @@ final class AssetExtension extends CompilerExtension
 	{
 		return Expect::structure([
 			'packages' => Expect::arrayOf(Expect::anyOf(Expect::type(Statement::class), Expect::string())),
+			'vite' => Expect::structure([
+				'manifest' => Expect::string()->required(),
+				'basePath' => Expect::string()->required(),
+				'files' => Expect::arrayOf(Expect::anyOf(Expect::string(), Expect::structure([
+					'file' => Expect::string()->required(),
+					'as' => Expect::string()->required(),
+				])->castTo('array')))->required(),
+			])->required(false),
 		]);
 	}
 
@@ -46,6 +55,15 @@ final class AssetExtension extends CompilerExtension
 
 		$builder->addDefinition($this->prefix('packages'))
 			->setFactory(Packages::class, [Arrays::first($packages), $packages]);
+
+		if ($config->vite) {
+			$builder->addDefinition($this->prefix('vite'))
+				->setFactory(VitePackage::class, [
+					$config->vite->manifest,
+					$config->vite->basePath,
+					$config->vite->files,
+				]);
+		}
 	}
 
 	public function beforeCompile(): void

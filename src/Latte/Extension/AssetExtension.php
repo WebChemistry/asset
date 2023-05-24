@@ -5,14 +5,15 @@ namespace WebChemistry\Asset\Latte\Extension;
 use Latte\Extension;
 use Symfony\Component\Asset\Packages;
 use WebChemistry\Asset\Latte\Extension\Node\AssetNode;
-use WebChemistry\Asset\Latte\Extension\Node\IfViteNode;
-use WebChemistry\Asset\Latte\Extension\Node\ViteNode;
+use WebChemistry\Asset\Latte\Extension\Node\RenderViteNode;
+use WebChemistry\Asset\Vite\VitePackage;
 
 final class AssetExtension extends Extension
 {
 
 	public function __construct(
 		private Packages $packages,
+		private ?VitePackage $vitePackage = null,
 	)
 	{
 	}
@@ -24,6 +25,7 @@ final class AssetExtension extends Extension
 	{
 		return [
 			'packages' => $this->packages,
+			'vitePackage' => $this->vitePackage,
 		];
 	}
 
@@ -42,12 +44,16 @@ final class AssetExtension extends Extension
 	 */
 	public function getTags(): array
 	{
-		return [
+		$tags = [
 			'asset' => [AssetNode::class, 'create'],
 			'n:asset' => [AssetNode::class, 'create'],
-			'vite' => [IfViteNode::class, 'create'],
-			'n:vite' => [IfViteNode::class, 'create'],
 		];
+
+		if ($this->vitePackage) {
+			$tags['renderVite'] = [RenderViteNode::class, 'create'];
+		}
+
+		return $tags;
 	}
 
 }
