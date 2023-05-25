@@ -62,7 +62,7 @@ final class VitePackage
 		$devUrl = $this->manifestData['url'] ?? null;
 
 		if ($devUrl) {
-			$parts[] = $this->createElement('@vite/client', ViteType::Script);
+			$parts[] = $this->createElement($devUrl . '@vite/client', ViteType::Script);
 		}
 
 		foreach ($this->files as $url) {
@@ -87,7 +87,7 @@ final class VitePackage
 				}
 			}
 		}
-		
+
 		return implode("\n", $parts);
 	}
 
