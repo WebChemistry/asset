@@ -2,6 +2,7 @@
 
 namespace WebChemistry\Asset\Vite;
 
+use Nette\Http\Request;
 use Symfony\Component\Asset\Exception\RuntimeException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -12,6 +13,8 @@ final class VitePackage
 	/** @var mixed[] */
 	private array $manifestData;
 
+	private string $devUrl;
+
 	/**
 	 * @param array<string|array{file: string, as: string}> $files
 	 */
@@ -19,6 +22,7 @@ final class VitePackage
 		private string $manifestPath,
 		private string $basePath,
 		private array $files,
+		private Request $request,
 	)
 	{
 	}
@@ -27,7 +31,9 @@ final class VitePackage
 	{
 		$this->loadManifestData();
 
-		if (isset($this->manifestData['url'])) {
+		$devUrl = $this->getManifestUrl();
+
+		if ($devUrl) {
 			return $default;
 		}
 
@@ -42,8 +48,10 @@ final class VitePackage
 	{
 		$this->loadManifestData();
 
-		if (isset($this->manifestData['url'])) {
-			return $this->manifestData['url'] . $url;
+		$devUrl = $this->getManifestUrl();
+
+		if ($devUrl) {
+			return $devUrl . $url;
 		}
 
 		if (isset($this->manifestData[$url]['file'])) {
@@ -59,7 +67,7 @@ final class VitePackage
 
 		$parts = [];
 
-		$devUrl = $this->manifestData['url'] ?? null;
+		$devUrl = $this->getManifestUrl();
 
 		if ($devUrl) {
 			$parts[] = $this->createElement($devUrl . '@vite/client', ViteType::Script);
@@ -89,6 +97,27 @@ final class VitePackage
 		}
 
 		return implode("\n", $parts);
+	}
+
+	private function getManifestUrl(): ?string
+	{
+		if (!isset($this->devUrl)) {
+			$this->loadManifestData();
+
+			$url = $this->manifestData['url'] ?? null;
+
+			if (!$url || !str_starts_with($url, 'http://0.0.0.0:')) {
+				return $url;
+			}
+
+			return $this->devUrl = sprintf(
+				'http://%s%s',
+				$this->request->getUrl()->getDomain(),
+				substr($url, strlen('http://0.0.0.0')),
+			);
+		}
+
+		return $this->devUrl;
 	}
 
 	private function createElement(string $url, ViteType $type): ViteElement
