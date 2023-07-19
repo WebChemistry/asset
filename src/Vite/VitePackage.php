@@ -70,7 +70,7 @@ final class VitePackage
 		$devUrl = $this->getManifestUrl();
 
 		if ($devUrl) {
-			$parts[] = $this->createElement($devUrl . '@vite/client', ViteType::Script);
+			$parts[] = $this->createElement($devUrl . '@vite/client', ViteType::Script, true);
 		}
 
 		foreach ($this->files as $url) {
@@ -82,7 +82,7 @@ final class VitePackage
 			}
 
 			if ($devUrl) {
-				$parts[] = $this->createElement($devUrl . $url, $type);
+				$parts[] = $this->createElement($devUrl . $url, $type, true);
 			} else {
 				if (isset($this->manifestData[$url]['file'])) {
 					$parts[] = $this->createElement($this->basePath . '/' . $this->manifestData[$url]['file'], $type);
@@ -120,10 +120,10 @@ final class VitePackage
 		return $this->devUrl;
 	}
 
-	private function createElement(string $url, ViteType $type): ViteElement
+	private function createElement(string $url, ViteType $type, bool $dev = false): ViteElement
 	{
 		return match ($type) {
-			ViteType::Stylesheet => new ViteStylesheet($url),
+			ViteType::Stylesheet => new ViteStylesheet($url, $dev),
 			ViteType::Script => new ViteScript($url),
 		};
 	}
