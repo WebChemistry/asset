@@ -13,11 +13,11 @@ use Latte\Compiler\Tag;
 final class AssetNode extends StatementNode
 {
 
-	private ExpressionNode $file;
+	public ExpressionNode $file;
 
-	private ArrayNode $arguments;
+	public ArrayNode $arguments;
 
-	private ?ElementNode $element;
+	public ?ElementNode $element;
 
 	public static function create(Tag $tag): self
 	{

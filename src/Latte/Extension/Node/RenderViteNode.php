@@ -2,6 +2,7 @@
 
 namespace WebChemistry\Asset\Latte\Extension\Node;
 
+use Generator;
 use Latte\Compiler\Nodes\StatementNode;
 use Latte\Compiler\PrintContext;
 use Latte\Compiler\Tag;
@@ -17,6 +18,12 @@ final class RenderViteNode extends StatementNode
 	public function print(PrintContext $context): string
 	{
 		return $context->format('echo $this->global->vitePackage->renderToString();');
+	}
+
+	public function &getIterator(): Generator
+	{
+		return;
+		yield;
 	}
 
 }
