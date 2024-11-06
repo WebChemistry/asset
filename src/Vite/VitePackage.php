@@ -16,10 +16,11 @@ final class VitePackage
 	private string $devUrl;
 
 	/**
+	 * @param string[] $manifests
 	 * @param array<string|array{file: string, as: string}> $files
 	 */
 	public function __construct(
-		private string $manifestPath,
+		private array $manifests,
 		private string $basePath,
 		private array $files,
 		private Request $request,
@@ -131,15 +132,21 @@ final class VitePackage
 	private function loadManifestData(): void
 	{
 		if (!isset($this->manifestData)) {
-			if (!is_file($this->manifestPath)) {
-				throw new RuntimeException(sprintf('Asset manifest file "%s" does not exist. Did you forget to build the assets with npm or yarn?', $this->manifestPath));
+			foreach ($this->manifests as $manifest) {
+				if (!is_file($manifest)) {
+					continue;
+				}
+
+				try {
+					$this->manifestData = json_decode(file_get_contents($manifest), true, flags: \JSON_THROW_ON_ERROR);
+
+					return;
+				} catch (\JsonException $e) {
+					throw new RuntimeException(sprintf('Error parsing JSON from asset manifest file "%s": ', $this->manifestPath).$e->getMessage(), previous: $e);
+				}
 			}
 
-			try {
-				$this->manifestData = json_decode(file_get_contents($this->manifestPath), true, flags: \JSON_THROW_ON_ERROR);
-			} catch (\JsonException $e) {
-				throw new RuntimeException(sprintf('Error parsing JSON from asset manifest file "%s": ', $this->manifestPath).$e->getMessage(), previous: $e);
-			}
+			throw new RuntimeException(sprintf('Asset manifest files %s do not exist. Did you forget to build the assets with npm or yarn?', implode(', ', $this->manifests)));
 		}
 	}
 

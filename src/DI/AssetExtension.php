@@ -24,7 +24,7 @@ final class AssetExtension extends CompilerExtension
 		return Expect::structure([
 			'packages' => Expect::arrayOf(Expect::anyOf(Expect::type(Statement::class), Expect::string())),
 			'vite' => Expect::structure([
-				'manifest' => Expect::string()->required(),
+				'manifests' => Expect::arrayOf(Expect::string())->required(),
 				'basePath' => Expect::string()->required(),
 				'files' => Expect::arrayOf(Expect::anyOf(Expect::string(), Expect::structure([
 					'file' => Expect::string()->required(),
@@ -59,7 +59,7 @@ final class AssetExtension extends CompilerExtension
 		if ($config->vite) {
 			$builder->addDefinition($this->prefix('vite'))
 				->setFactory(VitePackage::class, [
-					$config->vite->manifest,
+					$config->vite->manifests,
 					$config->vite->basePath,
 					$config->vite->files,
 				]);
