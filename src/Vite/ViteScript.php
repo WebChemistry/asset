@@ -7,13 +7,18 @@ final class ViteScript implements ViteElement
 
 	public function __construct(
 		private string $url,
+		private ?string $nonce = null,
 	)
 	{
 	}
 
 	public function __toString(): string
 	{
-		return sprintf('<script type="module" src="%s"></script>', htmlspecialchars($this->url, ENT_QUOTES, 'UTF-8'));
+		return sprintf(
+			'<script %stype="module" src="%s"></script>', 
+			$this->nonce ? sprintf(' nonce="%s"', $this->nonce) : '',
+			htmlspecialchars($this->url, ENT_QUOTES, 'UTF-8'),
+		);
 	}
 
 }

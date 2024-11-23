@@ -2,6 +2,7 @@
 
 namespace WebChemistry\Asset\Vite;
 
+use Nette\Http\IResponse;
 use Nette\Http\Request;
 use Symfony\Component\Asset\Exception\RuntimeException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -14,6 +15,8 @@ final class VitePackage
 	private array $manifestData;
 
 	private string $devUrl;
+	
+	private ?string $nonce;
 
 	/**
 	 * @param string[] $manifests
@@ -24,8 +27,18 @@ final class VitePackage
 		private string $basePath,
 		private array $files,
 		private Request $request,
+		IResponse $response,
 	)
 	{
+		$this->nonce = $this->findNonce($response);
+	}
+
+	private function findNonce(IResponse $response): ?string
+	{
+		$header = $response->getHeader('Content-Security-Policy')
+			?: $response->getHeader('Content-Security-Policy-Report-Only');
+
+		return preg_match('#\s\'nonce-([\w+/]+=*)\'#', (string) $header, $m) ? $m[1] : null;
 	}
 
 	public function getExtras(string $url, string $section, mixed $default = null): array|string|bool|null
@@ -124,8 +137,8 @@ final class VitePackage
 	private function createElement(string $url, ViteType $type, bool $dev = false): ViteElement
 	{
 		return match ($type) {
-			ViteType::Stylesheet => new ViteStylesheet($url, $dev),
-			ViteType::Script => new ViteScript($url),
+			ViteType::Stylesheet => new ViteStylesheet($url, $dev, $this->nonce),
+			ViteType::Script => new ViteScript($url, $this->nonce),
 		};
 	}
 
